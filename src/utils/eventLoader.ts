@@ -1,4 +1,5 @@
 import type { Client } from 'discord.js';
+import type { Event } from '../types/Event';
 
 export async function loadEvents(client: Client) {
   try {
