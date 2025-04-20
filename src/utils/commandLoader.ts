@@ -1,6 +1,5 @@
 import { Collection } from 'discord.js';
 import type { Command } from '../types/Command';
-import { config } from '../config/config';
 
 export const commands = new Collection<string, Command>();
 
