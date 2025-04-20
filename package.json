@@ -6,7 +6,7 @@
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target=bun --minify"
+    "build": "bun build src/index.ts --outdir dist --target=bun --minify --sourcemap"
   },
   "devDependencies": {
     "@types/bun": "latest",
