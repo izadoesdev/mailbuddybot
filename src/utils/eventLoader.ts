@@ -4,7 +4,6 @@ import { guildMemberAdd } from '../events/guildMemberAdd';
 
 export async function loadEvents(client: Client) {
   try {
-    // Register the guildMemberAdd event
     client.on('guildMemberAdd', guildMemberAdd.execute);
 
     console.log('Events loaded successfully');
