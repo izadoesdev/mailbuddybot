@@ -14,7 +14,7 @@ const client = new Client({
   ],
 });
 
-client.on('messageCreate', handleCommand);
+client.on('message', handleCommand);
 
 async function startBot() {
   try {
