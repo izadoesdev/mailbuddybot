@@ -22,5 +22,5 @@ async function startBot() {
     process.exit(1);
   }
 }
-
+ 
 startBot();
