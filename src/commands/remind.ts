@@ -55,12 +55,10 @@ export const remind: Command = {
         .setFooter({ text: `Set ${timeArg} ago` });
 
       await message.author.send({ embeds: [reminderEmbed] }).catch(async () => {
-        if (message.channel instanceof TextChannel || message.channel instanceof DMChannel || message.channel instanceof NewsChannel) {
-          await message.channel.send({
-            content: `${message.author}`,
-            embeds: [reminderEmbed]
-          });
-        }
+        await (message.channel as TextChannel | DMChannel | NewsChannel).send({
+          content: `${message.author}`,
+          embeds: [reminderEmbed]
+        });
       });
     }, totalMinutes * 60 * 1000);
   },
