@@ -7,9 +7,13 @@ export async function loadEvents(client: Client) {
   try {
     // Ready event
     if (ready.once) {
-      client.once(ready.name, (...args) => ready.execute(...args));
+      client.once(ready.name, (...args) => ready.execute(...args).catch(error => {
+        console.error(`Error in once event handler for ${ready.name}:`, error);
+      }));
     } else {
-      client.on(ready.name, (...args) => ready.execute(...args));
+      client.on(ready.name, (...args) => ready.execute(...args).catch(error => {
+        console.error(`Error in event handler for ${ready.name}:`, error);
+      }));
     }
 
     // Member events
