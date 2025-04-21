@@ -17,8 +17,6 @@ ENV DISCORD_TOKEN=${DISCORD_TOKEN}
 ENV CLIENT_ID=${CLIENT_ID}
 ENV GUILD_ID=${GUILD_ID}
 
-# Build the application
-RUN bun run build
 
 # Start the application
-CMD ["bun", "run", "dist/index.js"] 
+CMD ["bun", "run", "src/index.ts"] 
