@@ -37,21 +37,14 @@ async function startBot() {
     await loadCommands();
     await loadEvents(client);
     await client.login(config.token);
-    
-    client.once('ready', () => {
-      console.log(`\n✅ Bot is online! Logged in as ${client.user?.tag}`);
-      console.log(`\nPrefix: ${config.prefix}`);
-      console.log('\nAvailable Commands:');
-      console.log('1. !ping - Test the bot\'s response');
-    });
 
     // Handle messages
-    client.on('message', handleCommand);
+    client.on('messageCreate', handleCommand);
 
   } catch (error) {
     console.error('Failed to start bot:', error);
     process.exit(1);
   }
 }
- 
+
 startBot();
