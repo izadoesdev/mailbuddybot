@@ -19,12 +19,13 @@ export const userinfo: Command = {
       );
 
     if (member && message.guild) {
+      const guild = message.guild;
       embed.addFields(
         { name: '📥 Joined Server', value: member.joinedTimestamp 
           ? `<t:${Math.floor(member.joinedTimestamp / 1000)}:R>`
           : 'Unknown', inline: true },
         { name: '🎭 Roles', value: member.roles.cache.size > 1
-          ? member.roles.cache.filter(role => role.id !== message.guild!.id).map(role => `<@&${role.id}>`).join(', ')
+          ? member.roles.cache.filter(role => role.id !== guild.id).map(role => `<@&${role.id}>`).join(', ')
           : 'No roles', inline: false }
       );
     }
