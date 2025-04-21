@@ -8,7 +8,6 @@ export const rank: Command = {
     if (!message.guild) return;
 
     try {
-      // TODO: Get user's XP and level from database
       const xp = 0;
       const level = 1;
       const nextLevelXp = (level + 1) ** 2 * 10;
