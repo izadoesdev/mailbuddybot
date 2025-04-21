@@ -4,7 +4,7 @@ import type { Command } from '../types/Command';
 export const userinfo: Command = {
   name: 'userinfo',
   description: 'Shows information about a user',
-  async execute(message: Message, args: string[]) {
+  async execute(message: Message) {
     const target = message.mentions.users.first() || message.author;
     const member = message.guild?.members.cache.get(target.id);
 
