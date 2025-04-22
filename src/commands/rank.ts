@@ -1,5 +1,7 @@
-import type { Message } from 'discord.js';
+import { type Message } from 'discord.js';
 import type { Command } from '../types/Command';
+import { getOrCreateUser, calculateNextLevelXp, calculateProgress } from '../utils/xpSystem';
+import { createRankCard } from '../utils/canvasUtils';
 
 export const rank: Command = {
   name: 'rank',
@@ -8,17 +10,23 @@ export const rank: Command = {
     if (!message.guild) return;
 
     try {
-      const xp = 0;
-      const level = 1;
-      const nextLevelXp = (level + 1) ** 2 * 10;
-      const progress = Math.floor((xp / nextLevelXp) * 100);
-
-      await message.reply(
-        `**${message.author.username}'s Rank**\n` +
-        `Level: ${level}\n` +
-        `XP: ${xp}/${nextLevelXp}\n` +
-        `Progress: ${progress}%`
+      const target = message.mentions.users.first() || message.author;
+      
+      const userData = await getOrCreateUser(target.id, target.username);
+      
+      const nextLevelXp = calculateNextLevelXp(userData.level);
+      
+      const avatarURL = target.displayAvatarURL({ extension: 'png', size: 256 });
+      
+      const rankCard = await createRankCard(
+        target.username,
+        userData.level,
+        userData.xp,
+        nextLevelXp,
+        avatarURL
       );
+
+      await message.reply({ files: [rankCard] });
     } catch (error) {
       console.error('Error in rank command:', error);
       await message.reply('There was an error checking your rank.');
