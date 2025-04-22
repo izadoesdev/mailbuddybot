@@ -1,7 +1,7 @@
 import type { Message } from 'discord.js';
 import type { Event } from '../types/Event';
 import { EmbedBuilder, TextChannel, DMChannel, NewsChannel } from 'discord.js';
-import { awardMessageXp, calculateNextLevelXp } from '../utils/xpSystem';
+import { awardMessageXp, calculateNextLevelXp, calculateProgress } from '../utils/xpSystem';
 import { createProgressBar } from '../utils/canvasUtils';
 import { config } from '../config/config';
 
@@ -21,7 +21,7 @@ export const messageCreate: Event<'messageCreate'> = {
               message.channel instanceof NewsChannel) {
             
             const nextLevelXp = calculateNextLevelXp(result.newLevel);
-            const progress = Math.floor((result.user.xp / nextLevelXp) * 100);
+            const progress = calculateProgress(result.user.xp, result.newLevel);
             const progressBar = await createProgressBar(progress);
             
             const levelUpEmbed = new EmbedBuilder()

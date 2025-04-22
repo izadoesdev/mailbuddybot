@@ -10,12 +10,6 @@ services:
       - ./src/database/docker-init:/docker-entrypoint-initdb.d
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
-    healthcheck:
-      test: pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mailbuddybot}
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
     networks:
       - app-network
 
@@ -24,8 +18,7 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       - NODE_ENV=production
       - DISCORD_TOKEN=${DISCORD_TOKEN}
@@ -37,12 +30,6 @@ services:
     networks:
       - app-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "bun", "run", "src/db/healthcheck.ts"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
 
 networks:
   app-network:

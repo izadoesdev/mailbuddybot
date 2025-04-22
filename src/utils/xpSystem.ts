@@ -1,5 +1,5 @@
 import { and, eq, lt, sql, gte } from 'drizzle-orm';
-import db from '../db';
+import db, { pool } from '../db';
 import { users } from '../db/schema';
 
 const MESSAGE_XP_MIN = 5;
@@ -38,31 +38,60 @@ export function generateMessageXp(): number {
 }
 
 export async function getOrCreateUser(userId: string, username: string) {
+  // First try to get the user
   const existingUser = await db.select().from(users).where(eq(users.id, userId));
   
-  if (existingUser.length === 0) {
-    const backdatedTimestamp = new Date(0);
-    
-    await db.insert(users).values({
-      id: userId,
-      username: username,
-      xp: 0,
-      level: 1,
-      lastMessageTimestamp: backdatedTimestamp,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
-    
-    return {
-      id: userId,
-      username,
-      xp: 0,
-      level: 1,
-      lastMessageTimestamp: backdatedTimestamp,
-    };
+  if (existingUser.length > 0) {
+    return existingUser[0];
   }
   
-  return existingUser[0];
+  // User doesn't exist, create using a client transaction to avoid race conditions
+  const client = await pool.connect();
+  
+  try {
+    await client.query('BEGIN');
+    
+    // Check again within transaction to prevent race condition
+    const { rows } = await client.query(
+      'SELECT * FROM users WHERE id = $1',
+      [userId]
+    );
+    
+    if (rows.length > 0) {
+      await client.query('COMMIT');
+      return rows[0];
+    }
+    
+    // User still doesn't exist, create it
+    const backdatedTimestamp = new Date(0);
+    const now = new Date();
+    
+    const insertResult = await client.query(
+      `INSERT INTO users (id, username, xp, level, last_message_timestamp, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
+      [userId, username, 0, 1, backdatedTimestamp, now, now]
+    );
+    
+    await client.query('COMMIT');
+    
+    return insertResult.rows[0];
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error in getOrCreateUser transaction:', error);
+    
+    // If transaction failed, try one more time to get the user
+    // (in case another concurrent request succeeded in creating it)
+    const finalCheck = await db.select().from(users).where(eq(users.id, userId));
+    
+    if (finalCheck.length > 0) {
+      return finalCheck[0];
+    }
+    
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 export async function awardMessageXp(userId: string, username: string) {

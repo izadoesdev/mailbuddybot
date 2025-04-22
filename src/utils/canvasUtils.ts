@@ -1,5 +1,6 @@
 import { createCanvas, loadImage } from 'canvas';
 import { AttachmentBuilder } from 'discord.js';
+import { calculateProgress, calculateNextLevelXp } from './xpSystem';
 
 /**
  * Generates a modern progress bar using Canvas
@@ -134,23 +135,26 @@ export async function createRankCard(
     }
   }
   
+  // Calculate current level XP threshold
+  const currentLevelXp = level > 1 ? calculateNextLevelXp(level - 1) : 0;
+  
   // Add level and XP info - simpler layout with more spacing
   ctx.font = 'bold 16px Arial';
   ctx.fillText('Level', 25, 85);
   ctx.fillText('XP', 125, 85);
-  ctx.fillText('Required XP', 225, 85);
+  ctx.fillText('XP Progress', 225, 85);
   
   ctx.font = '22px Arial';
   ctx.fillText(`${level}`, 25, 115);
   ctx.fillText(`${xp}`, 125, 115);
-  ctx.fillText(`${xp}/${requiredXp}`, 225, 115);
+  ctx.fillText(`${xp-currentLevelXp}/${requiredXp-currentLevelXp}`, 225, 115);
   
   // Add progress label
   ctx.font = 'bold 16px Arial';
   ctx.fillText('Progress', 25, 145);
   
-  // Calculate progress percentage
-  const progress = Math.floor((xp / requiredXp) * 100);
+  // Calculate progress percentage using correct method
+  const progress = calculateProgress(xp, level);
   
   // Draw the progress bar - simplified like in the image
   const barWidth = 450;
