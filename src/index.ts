@@ -3,6 +3,7 @@ import { loadEvents } from './utils/eventLoader';
 import { loadCommands } from './utils/commandLoader';
 import { handleCommand } from './utils/commandHandler';
 import { config } from './config/config';
+import { testConnection } from './db';
 import 'dotenv/config';
 import type { Command } from './types/Command';
 
@@ -34,17 +35,39 @@ client.cooldowns = new Collection();
 // Load commands and events
 async function startBot() {
   try {
+    // Test database connection first
+    await testConnection();
+    
+    // Load bot components
     await loadCommands();
+    
+    // Set up command handler
+    client.on('messageCreate', handleCommand);
+    
+    // Load other events
     await loadEvents(client);
+    
+    // Login
     await client.login(config.token);
 
-    // Handle messages
-    client.on('messageCreate', handleCommand);
-
+    console.log('✅ Bot is ready!');
   } catch (error) {
     console.error('Failed to start bot:', error);
     process.exit(1);
   }
 }
+
+// Handle process termination
+process.on('SIGINT', () => {
+  console.log('Shutting down...');
+  client.destroy();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('Shutting down...');
+  client.destroy();
+  process.exit(0);
+});
 
 startBot();
