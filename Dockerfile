@@ -2,17 +2,14 @@ FROM oven/bun:1 AS builder
 
 WORKDIR /app
 
-# Install build dependencies
+# Install necessary build dependencies for canvas
 RUN apt-get update && apt-get install -y \
-    python3 \
-    python-is-python3 \
     pkg-config \
     build-essential \
+    python3 \
     libcairo2-dev \
     libpango1.0-dev \
     libjpeg-dev \
-    libgif-dev \
-    librsvg2-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
@@ -31,13 +28,11 @@ FROM oven/bun:1-slim AS runner
 
 WORKDIR /app
 
-# Install runtime dependencies
+# Install only necessary runtime dependencies for canvas
 RUN apt-get update && apt-get install -y \
     libcairo2 \
     libpango1.0-0 \
     libjpeg62-turbo \
-    librsvg2-2 \
-    libgif7 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy package files and built code
