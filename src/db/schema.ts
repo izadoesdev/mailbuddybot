@@ -4,7 +4,7 @@ export const users = pgTable("users", {
   id: varchar("id", { length: 255 }).primaryKey(), // Discord user ID
   username: varchar("username", { length: 255 }).notNull(),
   xp: integer("xp").default(0).notNull(),
-  level: integer("level").default(1).notNull(),
+  level: integer("level").default(1).notNull(), // Start at level 1 (one-based indexing)
   lastMessageTimestamp: timestamp("last_message_timestamp").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
