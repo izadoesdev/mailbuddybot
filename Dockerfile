@@ -14,4 +14,4 @@ COPY src .
 # Set environment variables
 ENV NODE_ENV=production
 
-CMD ["bun", "run", "src/index.ts"] 
+CMD ["bun", "run", "index.ts"] 
