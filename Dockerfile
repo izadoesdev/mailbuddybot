@@ -17,7 +17,6 @@ RUN bun run build
 FROM oven/bun:1-slim AS runner
 
 WORKDIR /app
-
 # Copy package files and built code
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/dist ./dist
