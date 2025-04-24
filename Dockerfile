@@ -1,4 +1,4 @@
-FROM oven/bun:1 AS builder
+FROM oven/bun:1
 
 WORKDIR /app
 
@@ -9,8 +9,6 @@ COPY package.json ./
 RUN bun install
 
 # Copy source code
-COPY . .
-
 # Build TypeScript code
 RUN bun run build
 
@@ -32,7 +30,10 @@ RUN addgroup --system --gid 1001 bunjs \
 
 USER botuser
 
+COPY src .
+
+
 # Set environment variables
 ENV NODE_ENV=production
 
-CMD ["bun", "run", "src/index.ts"] 
+CMD ["bun", "run", "index.ts"] 
