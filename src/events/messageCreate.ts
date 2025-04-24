@@ -1,8 +1,7 @@
 import type { Message } from 'discord.js';
 import type { Event } from '../types/Event';
 import { EmbedBuilder, TextChannel, DMChannel, NewsChannel } from 'discord.js';
-import { awardMessageXp, calculateNextLevelXp, calculateProgress } from '../utils/xpSystem';
-import { createProgressBar } from '../utils/canvasUtils';
+import { awardMessageXp, calculateNextLevelXp, calculateProgress, generateProgressBar } from '../utils/xpSystem';
 import { config } from '../config/config';
 
 export const messageCreate: Event<'messageCreate'> = {
@@ -22,7 +21,7 @@ export const messageCreate: Event<'messageCreate'> = {
             
             const nextLevelXp = calculateNextLevelXp(result.newLevel);
             const progress = calculateProgress(result.user.xp, result.newLevel);
-            const progressBar = await createProgressBar(progress);
+            const progressBar = generateProgressBar(progress, 15);
             
             const levelUpEmbed = new EmbedBuilder()
               .setColor('#00ff00')
@@ -31,14 +30,13 @@ export const messageCreate: Event<'messageCreate'> = {
               .setThumbnail(message.author.displayAvatarURL())
               .addFields(
                 { name: 'New Level', value: `${result.newLevel}`, inline: true },
-                { name: 'XP', value: `${result.user.xp}/${nextLevelXp}`, inline: true }
+                { name: 'XP', value: `${result.user.xp}/${nextLevelXp}`, inline: true },
+                { name: '\u200B', value: '\u200B', inline: true },
+                { name: 'Progress', value: progressBar }
               )
               .setFooter({ text: `Use ${config.prefix}rank to see your full progress` });
             
-            await message.channel.send({ 
-              embeds: [levelUpEmbed],
-              files: [progressBar]
-            });
+            await message.channel.send({ embeds: [levelUpEmbed] });
           }
         }
       }

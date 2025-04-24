@@ -1,7 +1,6 @@
-import { type Message } from 'discord.js';
+import { EmbedBuilder, type Message } from 'discord.js';
 import type { Command } from '../types/Command';
-import { getOrCreateUser, calculateNextLevelXp, calculateProgress } from '../utils/xpSystem';
-import { createRankCard } from '../utils/canvasUtils';
+import { getOrCreateUser, calculateNextLevelXp, calculateProgress, generateProgressBar } from '../utils/xpSystem';
 
 export const rank: Command = {
   name: 'rank',
@@ -11,22 +10,25 @@ export const rank: Command = {
 
     try {
       const target = message.mentions.users.first() || message.author;
-      
       const userData = await getOrCreateUser(target.id, target.username);
-      
       const nextLevelXp = calculateNextLevelXp(userData.level);
-      
-      const avatarURL = target.displayAvatarURL({ extension: 'png', size: 256 });
-      
-      const rankCard = await createRankCard(
-        target.username,
-        userData.level,
-        userData.xp,
-        nextLevelXp,
-        avatarURL
-      );
+      const progress = calculateProgress(userData.xp, userData.level);
+      const progressBar = generateProgressBar(progress, 15); // Using 15 blocks for the progress bar
 
-      await message.reply({ files: [rankCard] });
+      const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle(`${target.username}'s Rank`)
+        .setThumbnail(target.displayAvatarURL())
+        .addFields(
+          { name: 'Level', value: `${userData.level}`, inline: true },
+          { name: 'XP', value: `${userData.xp}/${nextLevelXp}`, inline: true },
+          { name: '\u200B', value: '\u200B', inline: true },
+          { name: 'Progress', value: progressBar }
+        )
+        .setFooter({ text: 'Keep chatting to earn more XP!' })
+        .setTimestamp();
+
+      await message.reply({ embeds: [embed] });
     } catch (error) {
       console.error('Error in rank command:', error);
       await message.reply('There was an error checking your rank.');
