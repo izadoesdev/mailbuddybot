@@ -30,7 +30,10 @@ export function generateProgressBar(progress: number, length: number = 20, fille
   const clampedProgress = Math.max(0, Math.min(100, progress));
   const filled = Math.max(0, Math.round((clampedProgress / 100) * length));
   const empty = Math.max(0, length - filled);
-  return filledChar.repeat(filled) + emptyChar.repeat(empty);
+  
+  // Add percentage at the end
+  const progressBar = filledChar.repeat(filled) + emptyChar.repeat(empty);
+  return `${progressBar} ${clampedProgress}%`;
 }
 
 export function generateMessageXp(): number {
