@@ -1,6 +1,7 @@
 import type { Message } from 'discord.js';
 import { commands } from './commandLoader';
 import { config } from '../config/config';
+import { logCommandUsage } from './commandTracking';
 
 export async function handleCommand(message: Message) {
   if (message.author.bot) return;
@@ -15,6 +16,10 @@ export async function handleCommand(message: Message) {
   if (!command) return;
 
   try {
+    // Log command usage to database
+    await logCommandUsage(message, commandName, args);
+    
+    // Execute the command
     await command.execute(message, args);
   } catch (error) {
     console.error('Error executing command:', error);

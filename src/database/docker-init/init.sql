@@ -31,10 +31,24 @@ CREATE TABLE IF NOT EXISTS "reminders" (
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create command logs table
+CREATE TABLE IF NOT EXISTS "command_logs" (
+    "id" SERIAL PRIMARY KEY,
+    "user_id" VARCHAR(255) NOT NULL,
+    "username" VARCHAR(255) NOT NULL,
+    "command" VARCHAR(255) NOT NULL,
+    "args" TEXT,
+    "guild_id" VARCHAR(255),
+    "channel_id" VARCHAR(255) NOT NULL,
+    "timestamp" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_reminders_user_id ON reminders(user_id);
 CREATE INDEX IF NOT EXISTS idx_reminders_due_at ON reminders(due_at);
+CREATE INDEX IF NOT EXISTS idx_command_logs_user_id ON command_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_command_logs_command ON command_logs(command);
 
 -- Grant permissions
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;

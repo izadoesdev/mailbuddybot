@@ -1,4 +1,4 @@
-import { integer, pgTable, varchar, timestamp, text } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, timestamp, text, index } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: varchar("id", { length: 255 }).primaryKey(), // Discord user ID
@@ -17,4 +17,25 @@ export const reminders = pgTable("reminders", {
   reminderText: text("reminder_text").notNull(),
   dueAt: timestamp("due_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const commandLogs = pgTable("command_logs", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  username: varchar("username", { length: 255 }).notNull(),
+  command: varchar("command", { length: 255 }).notNull(),
+  args: text("args"),
+  guildId: varchar("guild_id", { length: 255 }),
+  channelId: varchar("channel_id", { length: 255 }).notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+}, (table) => {
+  return {
+    // Add indexes for better query performance
+    timestampIdx: index("command_logs_timestamp_idx").on(table.timestamp),
+    userIdIdx: index("command_logs_user_id_idx").on(table.userId),
+    commandIdx: index("command_logs_command_idx").on(table.command),
+    guildIdIdx: index("command_logs_guild_id_idx").on(table.guildId),
+    // Compound index for common query patterns
+    userCommandIdx: index("command_logs_user_command_idx").on(table.userId, table.command),
+  };
 });

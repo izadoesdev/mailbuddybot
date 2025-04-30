@@ -13,7 +13,7 @@ export const help: Command = {
       .setDescription(`Prefix: \`${config.prefix}\`\n\nHere are all my commands:`);
 
     const commandList = Array.from(commands.values())
-      .map(cmd => `\`${cmd.name}\` - ${cmd.description}`)
+      .map((cmd, index) => `${index + 1}. \`${cmd.name}\` - ${cmd.description}`)
       .join('\n');
 
     embed.addFields({ name: 'Commands', value: commandList });

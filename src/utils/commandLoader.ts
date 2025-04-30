@@ -9,6 +9,8 @@ import { leaderboard } from '../commands/leaderboard';
 import { poll } from '../commands/poll';
 import { remind } from '../commands/remind';
 import { status } from '../commands/status';
+import { stats } from '../commands/stats';
+import { insights } from '../commands/insights';
 
 export const commands = new Collection<string, Command>();
 
@@ -25,6 +27,8 @@ export async function loadCommands() {
     commands.set(rank.name, rank);
     commands.set(leaderboard.name, leaderboard);
     commands.set(status.name, status);
+    commands.set(stats.name, stats);
+    commands.set(insights.name, insights);
 
     console.log('Commands loaded successfully');
   } catch (error) {
